@@ -132,4 +132,32 @@ public class Sms extends CordovaPlugin {
     private Activity getActivity() {
         return this.cordova.getActivity();
     }
+
+	private String getContact(String number){
+	    Cursor cur = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,null,null,null,null);
+	    String returnName = "";
+	    if(cur.getCount() > 0){
+	        while(cur.moveToNext()){
+				String id =  cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+				String name =  cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+
+				if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
+					Cursor pcur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,
+									ContactsContract.CommonDataKinds.Phone.NUMBER + "=?",new String[]{number},null);
+					int numindex = pcur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DATA);
+					if(pcur.moveToFirst()){
+	                    String dbNum = pcur.getString(numindex);
+	                    if(dbNum.equals(number)){
+							returnName =  name;
+	                    }
+	                }
+				}
+	        }
+	    }
+    	return returnName;
+	}
+	
+	private ContentResolver getContentResolver(){
+	    return this.ctx.getContentResolver();
+	}
 }
