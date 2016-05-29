@@ -18,6 +18,8 @@
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.SEND_SMS" />
+            <uses-permission android:name="android.permission.READ_SMS" />
+            <uses-permission android:name="android.permission.WRITE_SMS" />
         </config-file>
 
         <source-file src="src/android/Sms.java"

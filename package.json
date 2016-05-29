@@ -1,7 +1,7 @@
 {
-  "name": "hazems-cordova-plugin-sms",
+  "name": "malufetts-cordova-plugin-sms",
   "version": "0.0.2",
-  "description": "A plugin for sending sms messages",
+  "description": "A plugin for sending and reading sms messages",
   "cordova": {
     "id": "com.jsmobile.plugins.sms",
     "platforms": [
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hazems/cordova-sms-plugin.git"
+    "url": "git+https://github.com/malufett/cordova-sms-plugin.git"
   },
   "keywords": [
     "cordova",
@@ -26,7 +26,7 @@
   "author": "Hazem Saleh",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/hazems/cordova-sms-plugin/issues"
+    "url": "https://github.com/malufett/cordova-sms-plugin/issues"
   },
-  "homepage": "https://github.com/hazems/cordova-sms-plugin#readme"
+  "homepage": "https://github.com/malufett/cordova-sms-plugin#readme"
 }
