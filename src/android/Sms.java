@@ -68,7 +68,6 @@ public class Sms extends CordovaPlugin {
     private JSONObject readSMS(final CallbackContext callbackContext) throws JSONException {
         JSONObject data = new JSONObject();
         Uri uriSMSURI = Uri.parse("content://sms/inbox");
-
         Cursor cur = getContentResolver().query(uriSMSURI, null, null, null,null);
         JSONArray smsList = new JSONArray();
         data.put("messages", smsList);
@@ -83,7 +82,7 @@ public class Sms extends CordovaPlugin {
             }
             smsList.put(sms);
         }
-		return smsList;
+		return data;
 	}
 	
     private void sendSMS(String phoneNumber, String message, final CallbackContext callbackContext) throws JSONException {
