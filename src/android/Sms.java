@@ -99,9 +99,9 @@ public class Sms extends CordovaPlugin {
 
             String name = getContact(obj.getString("number"));
             if(!name.equals("")){
-                sms.put("name",name);
+                obj.put("name",name);
             }
-            smsList.put(sms);
+            smsList.put(obj);
         }
         cur.close();
 		return data;
