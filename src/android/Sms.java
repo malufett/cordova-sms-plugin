@@ -32,6 +32,14 @@ public class Sms extends CordovaPlugin {
     private static final String SENDING_SMS_ID = "SENDING_SMS";
     private static final String SMS_GENERAL_EXCEPTION = "SMS_GENERAL_EXCEPTION";
     
+	public static final String SMS_URI_ALL = "content://sms/";
+	public static final String SMS_URI_INBOX = "content://sms/inbox";
+	public static final String SMS_URI_SEND = "content://sms/sent";
+	public static final String SMS_URI_DRAFT = "content://sms/draft";
+	public static final String SMS_URI_OUTBOX = "content://sms/outbox";
+	public static final String SMS_URI_FAILED = "content://sms/failed";
+	public static final String SMS_URI_QUEUED = "content://sms/queued";
+    
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("sendMessage")) {
@@ -71,8 +79,8 @@ public class Sms extends CordovaPlugin {
 
     private JSONObject readSMS(final CallbackContext callbackContext) throws JSONException {
         JSONObject data = new JSONObject();
-        Uri uriSMSURI = Uri.parse("content://sms/inbox");
-        Cursor cur = getContentResolver().query(uriSMSURI, null, null, null,null);
+        Uri uriSMSURI = Uri.parse(SMS_URI_INBOX);
+        Cursor cur = getContentResolver().query(uriSMSURI, (String[])null, "", (String[])null, null);
         JSONArray smsList = new JSONArray();
         data.put("messages", smsList);
         
@@ -81,12 +89,12 @@ public class Sms extends CordovaPlugin {
 		}
         while (cur.moveToNext()) {
 			JSONObject sms = new JSONObject();
-            sms.put("id",cur.getString(0));
-            sms.put("number",cur.getString(2));
-            sms.put("date",cur.getString(4));
-            sms.put("status",cur.getString(8));
-            sms.put("type",cur.getString(9));
-            sms.put("text",cur.getString(11));
+            sms.put("id",cur.getColumnIndex("_id"));
+            sms.put("number",cur.getColumnIndex("address"));
+            sms.put("date",cur.getColumnIndex("date"));
+            sms.put("status",cur.getColumnIndex("status"));
+            sms.put("type",cur.getColumnIndex("type"));
+            sms.put("body",cur.getColumnIndex("body"));
 
             String name = getContact(cur.getString(2));
             if(!name.equals("")){
@@ -94,6 +102,7 @@ public class Sms extends CordovaPlugin {
             }
             smsList.put(sms);
         }
+        cur.close();
 		return data;
 	}
 	
@@ -170,6 +179,6 @@ public class Sms extends CordovaPlugin {
 	}
 	
 	private ContentResolver getContentResolver(){
-	    return cordova.getActivity().getContentResolver();
+	    return getActivity().getContentResolver();
 	}
 }
