@@ -10,19 +10,20 @@
     </js-module>
 
     <platform name="android">
-        <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="Sms">
-                <param name="android-package" value="com.jsmobile.plugins.sms.Sms" />
-            </feature>
-        </config-file>
+		<config-file parent="/*" target="res/xml/config.xml">
+			<feature name="Sms">
+				<param name="android-package" value="com.jsmobile.plugins.sms.Sms" />
+			</feature>
+		</config-file>
 
-        <config-file target="AndroidManifest.xml" parent="/*">
-            <uses-permission android:name="android.permission.SEND_SMS" />
-            <uses-permission android:name="android.permission.READ_SMS" />
-            <uses-permission android:name="android.permission.WRITE_SMS" />
-            <uses-permission android:name="android.permission.READ_CONTACTS" />
-            <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-        </config-file>
+		<config-file target="AndroidManifest.xml" parent="/*">
+			<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+			<uses-permission android:name="android.permission.SEND_SMS" />
+			<uses-permission android:name="android.permission.READ_SMS" />
+			<uses-permission android:name="android.permission.WRITE_SMS" />
+			<uses-permission android:name="android.permission.READ_CONTACTS" />
+			<uses-permission android:name="android.permission.WRITE_CONTACTS" />
+		</config-file>
 
         <source-file src="src/android/Sms.java"
                      target-dir="src/com/jsmobile/plugins/sms" />

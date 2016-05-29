@@ -79,24 +79,25 @@ public class Sms extends CordovaPlugin {
 
     private JSONObject readSMS(final CallbackContext callbackContext) throws JSONException {
         JSONObject data = new JSONObject();
-        Uri uriSMSURI = Uri.parse(SMS_URI_INBOX);
-        Cursor cur = getContentResolver().query(uriSMSURI, (String[])null, "", (String[])null, null);
         JSONArray smsList = new JSONArray();
         data.put("messages", smsList);
+        Uri uriSMSURI = Uri.parse(SMS_URI_INBOX);
+        Cursor cur = getContentResolver().query(uriSMSURI, (String[])null, "", (String[])null, null);
         
         if (!cur.moveToFirst()) {
 			return data;
 		}
+		
         while (cur.moveToNext()) {
-			JSONObject sms = new JSONObject();
-            sms.put("id",cur.getColumnIndex("_id"));
-            sms.put("number",cur.getColumnIndex("address"));
-            sms.put("date",cur.getColumnIndex("date"));
-            sms.put("status",cur.getColumnIndex("status"));
-            sms.put("type",cur.getColumnIndex("type"));
-            sms.put("body",cur.getColumnIndex("body"));
+			JSONObject obj = new JSONObject();
+            obj.put("id",cur.getColumnIndex("_id"));
+            obj.put("number",cur.getColumnIndex("address"));
+            obj.put("date",cur.getColumnIndex("date"));
+            obj.put("status",cur.getColumnIndex("status"));
+            obj.put("type",cur.getColumnIndex("type"));
+            obj.put("body",cur.getColumnIndex("body"));
 
-            String name = getContact(cur.getString(2));
+            String name = getContact(obj.getString("number"));
             if(!name.equals("")){
                 sms.put("name",name);
             }
