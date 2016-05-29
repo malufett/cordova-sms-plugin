@@ -54,8 +54,8 @@ public class Sms extends CordovaPlugin {
             return true;
         }else if (action.equals("readMessage")) {
             try {
-                messages = readSMS(callbackContext);
-				callbackContext.sendPluginResult(new PluginResult(Status.OK, messages);
+                JSONObject messages = readSMS(callbackContext);
+				callbackContext.sendPluginResult(new PluginResult(Status.OK, messages));
 				return true;
             } catch (JSONException jsonEx) {
 				callbackContext.sendPluginResult(new PluginResult(Status.ERROR, "Got JSON Exception "+ jsonEx.getMessage()));
