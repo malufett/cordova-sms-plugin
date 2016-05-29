@@ -158,6 +158,6 @@ public class Sms extends CordovaPlugin {
 	}
 	
 	private ContentResolver getContentResolver(){
-	    return this.ctx.getContentResolver();
+	    return cordova.getActivity().getContentResolver();
 	}
 }
