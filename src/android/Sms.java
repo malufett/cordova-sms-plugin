@@ -71,19 +71,22 @@ public class Sms extends CordovaPlugin {
 
     private JSONObject readSMS(final CallbackContext callbackContext) throws JSONException {
         JSONObject data = new JSONObject();
-        Uri uriSMSURI = Uri.parse("content://sms/inbox");
+        Uri uriSMSURI = Uri.parse("content://sms/");
         Cursor cur = getContentResolver().query(uriSMSURI, null, null, null,null);
         JSONArray smsList = new JSONArray();
         data.put("messages", smsList);
         while (cur.moveToNext()) {
 			JSONObject sms = new JSONObject();
             sms.put("number",cur.getString(2));
+            sms.put("date",cur.getString(4));
+            sms.put("status",cur.getString(8));
+            sms.put("type",cur.getString(9));
             sms.put("text",cur.getString(11));
 
-            String name = getContact(cur.getString(2));
+            /*String name = getContact(cur.getString(2));
             if(!name.equals("")){
                 sms.put("name",name);
-            }
+            }*/
             smsList.put(sms);
         }
 		return data;
