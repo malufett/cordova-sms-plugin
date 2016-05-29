@@ -32,4 +32,8 @@ smsExport.sendMessage = function(messageInfo, successCallback, errorCallback) {
     cordova.exec(successCallback, errorCallback, "Sms", "sendMessage", [phoneNumber, textMessage]);
 };
 
+smsExport.readMessage = function(successCallback, errorCallback) {              
+    cordova.exec(successCallback, errorCallback, "Sms", "readMessage", []);
+};
+
 module.exports = smsExport;

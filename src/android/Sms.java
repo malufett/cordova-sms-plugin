@@ -8,6 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -48,11 +52,40 @@ public class Sms extends CordovaPlugin {
             this.sendSMS(phoneNumber, message, callbackContext);
             
             return true;
+        }else if (action.equals("readMessage")) {
+            try {
+                messages = readSMS(callbackContext);
+				callbackContext.sendPluginResult(new PluginResult(Status.OK, messages);
+				return true;
+            } catch (JSONException jsonEx) {
+				callbackContext.sendPluginResult(new PluginResult(Status.ERROR, "Got JSON Exception "+ jsonEx.getMessage()));
+            }
         }
         
         return false;
     }
 
+    private JSONObject readSMS(final CallbackContext callbackContext) throws JSONException {
+        JSONObject data = new JSONObject();
+        Uri uriSMSURI = Uri.parse("content://sms/inbox");
+
+        Cursor cur = getContentResolver().query(uriSMSURI, null, null, null,null);
+        JSONArray smsList = new JSONArray();
+        data.put("messages", smsList);
+        while (cur.moveToNext()) {
+			JSONObject sms = new JSONObject();
+            sms.put("number",cur.getString(2));
+            sms.put("text",cur.getString(11));
+
+            String name = getContact(cur.getString(2));
+            if(!name.equals("")){
+                sms.put("name",name);
+            }
+            smsList.put(sms);
+        }
+		return smsList;
+	}
+	
     private void sendSMS(String phoneNumber, String message, final CallbackContext callbackContext) throws JSONException {
         PendingIntent sentPI = PendingIntent.getBroadcast(getActivity(), 0, new Intent(SENDING_SMS_ID), 0);
 
