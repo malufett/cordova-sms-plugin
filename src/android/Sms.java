@@ -30,7 +30,8 @@ public class Sms extends CordovaPlugin {
     private static final String NO_SMS_SERVICE_AVAILABLE = "NO_SMS_SERVICE_AVAILABLE";
     private static final String SMS_FEATURE_NOT_SUPPORTED = "SMS_FEATURE_NOT_SUPPORTED";
     private static final String SENDING_SMS_ID = "SENDING_SMS";
-
+    private static final String SMS_GENERAL_EXCEPTION = "SMS_GENERAL_EXCEPTION";
+    
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("sendMessage")) {
@@ -57,8 +58,11 @@ public class Sms extends CordovaPlugin {
                 JSONObject messages = readSMS(callbackContext);
 				callbackContext.sendPluginResult(new PluginResult(Status.OK, messages));
 				return true;
-            } catch (JSONException jsonEx) {
-				callbackContext.sendPluginResult(new PluginResult(Status.ERROR, "Got JSON Exception "+ jsonEx.getMessage()));
+            }  catch (Exception Ex) {
+                JSONObject errorObject = new JSONObject();                
+                errorObject.put("code", SMS_GENERAL_EXCEPTION);
+                errorObject.put("message", "Got Exception " + Ex.getMessage());
+				callbackContext.sendPluginResult(new PluginResult(Status.ERROR, errorObject));
             }
         }
         
