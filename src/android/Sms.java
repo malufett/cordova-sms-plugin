@@ -62,8 +62,25 @@ public class Sms extends CordovaPlugin {
             
             return true;
         }else if (action.equals("readMessage")) {
+            String type = args.getString(0);
+			try {
+				JSONObject messages;
+				if(type == "sms"){
+					messages = readSMS(callbackContext);
+				}else{
+					messages = readWA(callbackContext);
+				}
+				callbackContext.sendPluginResult(new PluginResult(Status.OK, messages));
+				return true;
+            }  catch (Exception Ex) {
+                JSONObject errorObject = new JSONObject();                
+                errorObject.put("code", SMS_GENERAL_EXCEPTION);
+                errorObject.put("message", "Got Exception " + Ex.getMessage());
+				callbackContext.sendPluginResult(new PluginResult(Status.ERROR, errorObject));
+            }
+        }else if (action.equals("isWhatsAppInstalled")) {
             try {
-                JSONObject messages = readSMS(callbackContext);
+                JSONObject messages = isWhatsAppInstalled(callbackContext);
 				callbackContext.sendPluginResult(new PluginResult(Status.OK, messages));
 				return true;
             }  catch (Exception Ex) {
@@ -76,7 +93,55 @@ public class Sms extends CordovaPlugin {
         
         return false;
     }
+	
+    private JSONObject isWhatsAppInstalled(final CallbackContext callbackContext) throws JSONException {
+		JSONObject data = new JSONObject();
+		JSONObject obj = new JSONObject();
+		boolean installed = false;
+		PackageManager pm = getApplicationContext().getPackageManager();
+		
+		try {
+			pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+			installed =  true;
+		} catch (NameNotFoundException e) {
+			installed = false;
+		}
+		obj.put("installed", installed);
+		data.put("whatsapp", obj);
+		return data;
+	}
 
+	private JSONObject readWA(final CallbackContext callbackContext) throws Exception{	
+		JSONObject data = new JSONObject();
+		WhatsAppDBHelper db = new WhatsAppDBHelper("msgstore", getApplicationContext());
+		db.openDataBase();		
+		Cursor cursor = db.query("SELECT FROM ", new String[] {});	
+		
+		if (!cur.moveToFirst()) {
+			db.close();
+			return data;
+		}
+		
+		while (cur.moveToNext()) {
+			JSONObject obj = new JSONObject();
+            obj.put("id",cur.getColumnIndex("key_id"));
+            obj.put("number",cur.getColumnIndex("key_remote_jid")).replace("", "@s.whatsapp.net");
+            obj.put("date",cur.getColumnIndex("timestamp"));
+            obj.put("status",cur.getColumnIndex("status"));
+            obj.put("type",cur.getColumnIndex("origin"));
+            obj.put("body",cur.getColumnIndex("data"));
+
+            String name = getContact(obj.getString("number"));
+            if(!name.equals("")){
+                obj.put("name",name);
+            }
+            smsList.put(obj);
+        }
+		
+        db.close();
+		return data;
+	}
+	
     private JSONObject readSMS(final CallbackContext callbackContext) throws JSONException {
         JSONObject data = new JSONObject();
         JSONArray smsList = new JSONArray();
@@ -85,6 +150,7 @@ public class Sms extends CordovaPlugin {
         Cursor cur = getContentResolver().query(uriSMSURI, (String[])null, "", (String[])null, null);
         
         if (!cur.moveToFirst()) {
+			cur.close();
 			return data;
 		}
 		
@@ -181,5 +247,40 @@ public class Sms extends CordovaPlugin {
 	
 	private ContentResolver getContentResolver(){
 	    return getActivity().getContentResolver();
+	}
+	
+	private Context getApplicationContext(){
+	    return getActivity().getApplicationContext();
+	}
+}
+
+class WhatsAppDBHelper extends SQLiteOpenHelper{
+	private String path = "/data/data/com.whatsapp/databases/";
+	private String db_name = "";
+	private SQLiteDatabase myDataBase;  
+    private final Context myContext;
+	
+	public WhatsAppDBHelper(String name, Context context) {
+		this.db_name = name;
+		super(context, this.db_name, null, 1);
+        this.myContext = context;
+	}
+	
+	public void openDataBase() throws SQLException{
+        String myPath = this.path + this.db_name;
+    	this.myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY); 
+    }
+	
+	public Cursor query(String query, String[] whereArgs){
+		if(this.myDataBase != null)
+			retrun this.myDataBase.rawQuery(query, whereArgs);
+		return null;
+	}
+	
+	@Override
+	public synchronized void close() {
+		if(myDataBase != null)
+			myDataBase.close();
+		super.close(); 
 	}
 }
